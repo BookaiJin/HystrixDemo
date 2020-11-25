@@ -21,7 +21,6 @@ public class MysqlConnector implements Runnable {
     //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     //static final String DB_URL = "jdbc:mysql://localhost:3306/RUNOOB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
-
     private static final String USER = "root";
     private static final String PASS = "123456";
     private static final String SQL = "SELECT * FROM summarySumm";
