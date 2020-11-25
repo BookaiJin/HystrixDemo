@@ -27,7 +27,6 @@ public class MysqlConnector implements Runnable {
     private static final String SQL = "SELECT * FROM summarySumm";
 
     @Override
-    @Hystrix
     public void run() {
 
         Connection conn = null;
@@ -43,12 +42,12 @@ public class MysqlConnector implements Runnable {
             // 执行查询
             System.out.println(" 实例化Statement对象...");
             stmt = conn.createStatement();
-            ResultSet wait = stmt.executeQuery("SELECT SLEEP(100)");
+            ResultSet wait = execute(conn, stmt, "SELECT SLEEP(100)");
             while (wait.next()) {
                 int result = wait.getRow();
                 System.out.println("sleep 1s, result: " + result);
             }
-            ResultSet rs = stmt.executeQuery(SQL);
+            ResultSet rs = execute(conn, stmt, SQL);
 
             // 展开结果集数据库
             while (rs.next()) {
@@ -90,5 +89,10 @@ public class MysqlConnector implements Runnable {
             }
         }
         System.out.println("Goodbye!");
+    }
+
+    @Hystrix
+    private ResultSet execute(Connection connection, Statement statement, String SQL) throws Exception {
+        return statement.executeQuery(SQL);
     }
 }
