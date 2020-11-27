@@ -5,6 +5,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import me.bokai.hystrix.scene.HystrixScene;
 
 /**
  * @author bokai
@@ -16,5 +17,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Hystrix {
 
+    HystrixScene scene() default HystrixScene.NONE;
 
 }

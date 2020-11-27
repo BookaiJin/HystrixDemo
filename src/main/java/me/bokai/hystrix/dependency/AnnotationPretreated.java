@@ -18,11 +18,11 @@ import me.bokai.hystrix.nopreception.HystrixInterceptor;
  * Created by bokai on 2020-11-23
  */
 public class AnnotationPretreated {
-
-
-    // 把 MyService 中所有带有 @Log 注解的方法都过滤出来
-    static List<String> methodsWithLog = Stream.of(MysqlConnector.class.getMethods())
-            .filter(AnnotationPretreated::isAnnotationWithLog)
+    /**
+     * 把 MysqlConnector 中所有带有 @Hystrix 注解的方法都过滤出来
+     */
+    static List<String> methodsWithHystrix = Stream.of(MysqlConnector.class.getDeclaredMethods())
+            .filter(AnnotationPretreated::isAnnotationWithHystrix)
             .map(Method::getName)
             .collect(Collectors.toList());
 
@@ -31,7 +31,7 @@ public class AnnotationPretreated {
                 // 创建用于生成子类的 builder
                 .subclass(MysqlConnector.class)
                 // 控制目标子类上具有哪些方法
-                .method(method -> methodsWithLog.contains(method.getName()))
+                .method(method -> methodsWithHystrix.contains(method.getName()))
                 // 对匹配到的方法进行拦截，传入定制化的方法实现，继续返回 builder
                 .intercept(MethodDelegation.to(HystrixInterceptor.class))
                 // 根据 builder 中的信息生成尚未加载的动态类型（目标子类）
@@ -44,20 +44,8 @@ public class AnnotationPretreated {
                 .newInstance();
     }
 
-    private static boolean isAnnotationWithLog(Method method) {
+    private static boolean isAnnotationWithHystrix(Method method) {
         // 尝试通过反射获取方法上的注解
         return method.getAnnotation(Hystrix.class) != null;
     }
-
-    // 方法拦截器
-//    public static class LoggerInterceptor {
-//        public static void log(@SuperCall Callable<Void> zuper) throws Exception {
-//            System.out.println("Start!");
-//            try {
-//                zuper.call();
-//            } finally {
-//                System.out.println("End!");
-//            }
-//        }
-//    }
 }

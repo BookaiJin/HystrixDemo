@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import me.bokai.hystrix.nopreception.Hystrix;
+import me.bokai.hystrix.scene.HystrixScene;
 
 /**
  * @author bokai
@@ -35,13 +36,13 @@ public class MysqlConnector implements Runnable {
             Class.forName(JDBC_DRIVER);
 
             // 打开链接
-            System.out.println("连接数据库...");
+//            System.out.println("连接数据库...");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
             // 执行查询
-            System.out.println(" 实例化Statement对象...");
+//            System.out.println(" 实例化Statement对象...");
             stmt = conn.createStatement();
-            ResultSet wait = execute(conn, stmt, "SELECT SLEEP(100)");
+            ResultSet wait = execute(conn, stmt, "SELECT SLEEP(3)");
             while (wait.next()) {
                 int result = wait.getRow();
                 System.out.println("sleep 1s, result: " + result);
@@ -59,18 +60,17 @@ public class MysqlConnector implements Runnable {
                 int money = rs.getInt("money");
 
                 // 输出数据
-                System.out.print("ID: " + id);
-                System.out.print(", 名称: " + name);
-                System.out.print(", 年月: " + year + "/" + month);
-                System.out.print(", 个数: " + count + "， 金额: " + money);
-                System.out.print("\n");
+                System.out.print("ID: " + id + ", 名称: " + name + ", 年月: " + year + "/" + month + ", 个数: " + count + "， 金额: " + money + "\n");
+                break;
             }
             // 完成后关闭
             rs.close();
             stmt.close();
             conn.close();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage() + " time out");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } finally {
             // 关闭资源
             try {
@@ -87,11 +87,22 @@ public class MysqlConnector implements Runnable {
                 se.printStackTrace();
             }
         }
-        System.out.println("Goodbye!");
+//        System.out.println("Goodbye!");
     }
 
-    @Hystrix
-    private ResultSet execute(Connection connection, Statement statement, String SQL) throws Exception {
+    @Hystrix(scene = HystrixScene.EXECUTE_QUERY)
+    public ResultSet execute(Connection connection, Statement statement, String SQL) throws Exception {
         return statement.executeQuery(SQL);
     }
+
+    @Hystrix(scene = HystrixScene.CREATE_CONNECTION)
+    public Connection createConnection(String dbUrl, String username, String psw) throws SQLException {
+        return DriverManager.getConnection(dbUrl, username, psw);
+    }
+
+    @Hystrix(scene = HystrixScene.CLOSE_CONN)
+    public void closeConnection(String dbUrl) throws SQLException{
+
+    }
+
 }
