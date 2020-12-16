@@ -1,5 +1,6 @@
 package me.bokai.hystrix.demo;
 
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import me.bokai.hystrix.dependency.AnnotationPretreated;
@@ -17,8 +18,12 @@ public class HystrixDemo {
 
     public static void main(String... args) throws Exception {
         ExecutorService service = Executors.newFixedThreadPool(10);
+        System.out.println(new Date(System.currentTimeMillis()));
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 10; i++) {
+            if (i == 5) {
+                Thread.sleep(5999);
+            }
             service.execute(AnnotationPretreated.enhanceByAnnotation());
 //            Thread.sleep(1000);
         }

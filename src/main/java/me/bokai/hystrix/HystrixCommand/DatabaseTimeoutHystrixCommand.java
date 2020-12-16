@@ -24,12 +24,15 @@ public class DatabaseTimeoutHystrixCommand extends HystrixCommand<ResultSet> {
                         HystrixCommandProperties.Setter()
                                 .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
                                 .withExecutionTimeoutEnabled(true)
+                                .withCircuitBreakerEnabled(true)
+                                .withCircuitBreakerSleepWindowInMilliseconds(10000)
+                                .withCircuitBreakerErrorThresholdPercentage(50)
                                 .withExecutionTimeoutInMilliseconds(5000))
                 .andThreadPoolPropertiesDefaults
                         (HystrixThreadPoolProperties.Setter()
-                                .withCoreSize(5)
-                                .withMaxQueueSize(10)
-                                .withMaximumSize(10)));
+                                .withCoreSize(3)
+                                .withMaxQueueSize(3)
+                                .withMaximumSize(3)));
         this.callable = callable;
         this.name = name;
     }

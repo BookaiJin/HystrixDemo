@@ -42,7 +42,7 @@ public class MysqlConnector implements Runnable {
             // 执行查询
 //            System.out.println(" 实例化Statement对象...");
             stmt = conn.createStatement();
-            ResultSet wait = execute(conn, stmt, "SELECT SLEEP(3)");
+            ResultSet wait = execute(conn, stmt, "SELECT SLEEP(20)");
             while (wait.next()) {
                 int result = wait.getRow();
                 System.out.println("sleep 1s, result: " + result);
